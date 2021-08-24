@@ -121,6 +121,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 			countFps++;
 
+			char str[16];
+			wsprintf(str, "X:%d,Y:%d", (int)Input::GetMousePosition().x, (int)Input::GetMousePosition().y );
+			SetWindowText(hWnd, str);
 
 
 			//ゲームの処理
@@ -152,6 +155,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
+	case WM_MOUSEMOVE:
+		Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));
+		return 0;
 
 	case WM_DESTROY:
 		PostQuitMessage(0);  //プログラム終了

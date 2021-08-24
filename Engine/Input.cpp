@@ -1,11 +1,15 @@
 #include "Input.h"
 
+
 namespace Input
 {
 	LPDIRECTINPUT8   pDInput = nullptr;
 	LPDIRECTINPUTDEVICE8 pKeyDevice = nullptr;
 	BYTE keyState[256] = { 0 };
-	BYTE prevKeyState[256] = { 0 };;    //前フレームでの各キーの状態
+	BYTE prevKeyState[256] = { 0 };    //前フレームでの各キーの状態
+
+	XMFLOAT3 mousePosition = { 0,0,0 };
+
 
 	void Initialize(HWND hWnd)
 	{
@@ -51,6 +55,22 @@ namespace Input
 		}
 		return false;
 	}
+
+	XMFLOAT3 GetMousePosition()
+	{
+		return mousePosition;
+	}
+
+	void SetMousePosition(int x, int y)
+	{
+		mousePosition.x = x;
+		mousePosition.y = y;
+		mousePosition.z = 0;
+	}
+
+
+
+
 
 	void Release()
 	{
