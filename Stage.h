@@ -5,7 +5,12 @@
 class Stage : public GameObject
 {
     int hModel_[5];    //モデル番号
-    int table_[15][15];
+
+    struct
+    {
+        int type;
+        int height;
+    }table_[15][15];
 
 public:
     //コンストラクタ
