@@ -1,5 +1,6 @@
 #include "EditScene.h"
 #include "Stage.h"
+#include "Controller.h"
 
 //コンストラクタ
 EditScene::EditScene(GameObject* parent)
@@ -10,6 +11,8 @@ EditScene::EditScene(GameObject* parent)
 //初期化
 void EditScene::Initialize()
 {
+	Instantiate<Stage>(this);
+	Instantiate<Controller>(this);
 }
 
 //更新
@@ -20,7 +23,7 @@ void EditScene::Update()
 //描画
 void EditScene::Draw()
 {
-	Instantiate<Stage>(this);
+
 }
 
 //開放
