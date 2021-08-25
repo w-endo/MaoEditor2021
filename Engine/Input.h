@@ -22,6 +22,9 @@ namespace Input
 	bool IsKeyUp(int keyCode);
 
 	//É}ÉEÉX
+	bool IsMouseButton(int buttonCode);
+	bool IsMouseButtonDown(int buttonCode);
+	bool IsMouseButtonUp(int buttonCode);
 	void SetMousePosition(int x, int y);
 	XMFLOAT3 GetMousePosition();
 
