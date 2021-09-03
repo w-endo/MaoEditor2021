@@ -33,5 +33,7 @@ namespace Model
 
 
 	void AllRelease();
+
+	void RayCast(int handle, RayCastData* rayData)
 };
 
