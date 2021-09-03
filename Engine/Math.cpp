@@ -14,11 +14,39 @@ float Math::Det(XMFLOAT3 a, XMFLOAT3 b, XMFLOAT3 c)
 
 bool Math::Intersect(XMFLOAT3 origin, XMFLOAT3 ray, XMFLOAT3 v0, XMFLOAT3 v1, XMFLOAT3 v2)
 {
+	XMVECTOR vOrigin = XMLoadFloat3(&origin);
+	XMVECTOR vRay = XMLoadFloat3(&ray);
+	XMVECTOR vV0 = XMLoadFloat3(&v0);
+	XMVECTOR vV1 = XMLoadFloat3(&v1);
+	XMVECTOR vV2 = XMLoadFloat3(&v2);
 
+	XMVECTOR vEdge1 = vV1 - vV0;
+	XMVECTOR vEdge2 = vV2 - vV0;
 
+	XMFLOAT3 edge1;
+	XMFLOAT3 edge2;
+	XMStoreFloat3(&edge1, vEdge1);
+	XMStoreFloat3(&edge2, vEdge2);
 
+	XMFLOAT3 d;
+	XMStoreFloat3(&d, vOrigin - vV0);
 
+	ray = { ray.x * -1, ray.y * -1, ray.z * -1 };
 
+	float denom = Det(edge1, edge2, ray);
 
+	if (denom < 0)
+	{
+		return false;
+	}
+
+	float u = Det(d, edge2, ray) / denom;
+	float v = Det(edge1, d, ray) / denom;
+	float t = Det(edge1, edge2, d) / denom;
+
+	if (u >= 0 && v >= 0 && t >= 0 && (u + v) <= 1.0f)
+	{
+		return true;
+	}
 	return false;
 }
