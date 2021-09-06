@@ -1,5 +1,9 @@
 #include "Stage.h"
 #include "Engine/Model.h"
+#include "Engine/Input.h"
+#include "Engine/Direct3D.h"
+#include "Engine/Camera.h"
+#include "Engine/Fbx.h"
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
@@ -51,6 +55,60 @@ void Stage::Initialize()
 //更新
 void Stage::Update()
 {
+    //マウスをクリックしたら
+    if (Input::IsMouseButtonDown(0))
+    {
+        //ビューポート行列
+        float w = Direct3D::screenWidth / 2.0f;
+        float h = Direct3D::screenHeight / 2.0f;
+        XMMATRIX vp = {
+            w, 0, 0, 0,
+            0, -h, 0, 0,
+            0, 0, 1, 0,
+            w, h, 0, 1
+        };
+
+
+
+
+
+		//各逆行列
+		XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
+		XMMATRIX invPrj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
+		XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
+
+
+		//クリック位置（手前）
+        XMVECTOR mousePosFront = { Input::GetMousePosition().x, Input::GetMousePosition().y, 0, 0 };
+
+
+        //クリック位置（奥）
+        XMVECTOR mousePosBack = { Input::GetMousePosition().x, Input::GetMousePosition().y, 1, 0 };
+
+
+        //変換
+        mousePosFront = XMVector3TransformCoord(mousePosFront, invVP * invPrj * invView);
+        mousePosBack = XMVector3TransformCoord(mousePosBack, invVP * invPrj * invView);
+
+        XMFLOAT3 fMPFront;
+        XMStoreFloat3(&fMPFront, mousePosFront);
+
+
+        XMFLOAT3 fDir;
+        XMStoreFloat3(&fDir, XMVector3Normalize(mousePosBack - mousePosFront));
+
+        //レイキャスト
+        RayCastData data;
+        data.start = fMPFront;
+        data.dir = fDir;
+        Model::RayCast(hModel_[0], &data);
+
+        //当たったかテスト
+        if (data.hit)
+        {
+            int a = 0;	//←★ここにブレークポイント
+        }
+    }
 }
 
 //描画

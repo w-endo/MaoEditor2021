@@ -125,6 +125,7 @@ void Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 
 	for (int i = 0; i < materialCount_; i++)
 	{
+		indexCountEachMaterial_[i] = 0;
 		ppIndex_[i] = new int[polygonCount_ * 3];
 
 		int count = 0;
