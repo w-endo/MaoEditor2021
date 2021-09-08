@@ -98,16 +98,36 @@ void Stage::Update()
         XMStoreFloat3(&fDir, XMVector3Normalize(mousePosBack - mousePosFront));
 
         //レイキャスト
-        RayCastData data;
-        data.start = fMPFront;
-        data.dir = fDir;
-        Model::RayCast(hModel_[0], &data);
-
-        //当たったかテスト
-        if (data.hit)
+        for (int x = 0; x < 15; x++)
         {
-            int a = 0;	//←★ここにブレークポイント
+            for (int z = 0; z < 15; z++)
+            {
+                for (int y = 0; y < table_[x][z].height; y++)
+                {
+                    Transform trans;
+                    trans.position_.x = x;
+                    trans.position_.y = y;
+                    trans.position_.z = z;
+                    int type = table_[x][z].type;
+                    Model::SetTransform(hModel_[type], trans);
+
+
+                    RayCastData data;
+                    data.start = fMPFront;
+                    data.dir = fDir;
+                    Model::RayCast(hModel_[type], &data);
+
+                    //当たったかテスト
+                    if (data.hit)
+                    {
+                        
+                        table_[x][z].height++;
+
+                    }
+                }
+            }
         }
+
     }
 }
 

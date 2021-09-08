@@ -66,5 +66,27 @@ void Model::AllRelease()
 
 void Model::RayCast(int handle, RayCastData* rayData)
 {
+    //‚Æ‚è‚ ‚¦‚¸ƒxƒNƒgƒ‹‚É‚µ‚Ä‚¨‚­
+    XMVECTOR start = XMLoadFloat3(&rayData->start); //”­ËˆÊ’u
+    XMVECTOR dir = XMLoadFloat3(&rayData->dir);     //”­Ë•ûŒü
+
+    //‡@
+    XMMATRIX matInv = XMMatrixInverse(nullptr, datas[handle]->transform.GetWorldMatrix());
+
+    //‡A
+    XMVECTOR target = start + dir;
+
+    //‡B
+    start = XMVector3TransformCoord(start, matInv);
+
+    //‡C
+    target = XMVector3TransformCoord(target, matInv);
+
+    //‡D
+    XMStoreFloat3(&rayData->start, start);
+
+    //‡E
+    XMStoreFloat3(&rayData->dir, target - start);
+
     datas[handle]->pFbx->RayCast(rayData);
 }
