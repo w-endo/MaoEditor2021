@@ -6,6 +6,7 @@
 #include "Engine/Input.h"
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
+#include "Stage.h"
 #include "resource.h"
 
 #pragma comment(lib, "winmm.lib")
@@ -18,6 +19,9 @@ const int CLIENT_HEIGHT = 600; //ウィンドウの高さ
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
+
+RootJob* pRootJob;
 
 //エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
@@ -33,7 +37,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	wc.hIcon = LoadIcon(NULL, IDI_QUESTION); //アイコン
 	wc.hIconSm = LoadIcon(NULL, IDI_WINLOGO);   //小さいアイコン
 	wc.hCursor = LoadCursor(NULL, IDC_WAIT);   //マウスカーソル
-	wc.lpszMenuName = NULL;                     //メニュー（なし）
+	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);                     //メニュー（なし）
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //背景（白）
@@ -42,7 +46,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	//ウィンドウサイズの計算
 	RECT winRect = { 0, 0, CLIENT_WIDTH, CLIENT_HEIGHT };
-	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, FALSE);
+	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, TRUE);
 	int winW = winRect.right - winRect.left;     //ウィンドウ幅
 	int winH = winRect.bottom - winRect.top;     //ウィンドウ高さ
 
@@ -66,7 +70,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	ShowWindow(hWnd, nCmdShow);
 
 
-	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
 
 
 	//Direct3D初期化
@@ -76,9 +79,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	Camera::Initialize();
 
-	RootJob* pRootJob = new RootJob;
+	pRootJob = new RootJob;
 	pRootJob->Initialize();
 
+	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
 
 	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
@@ -166,6 +170,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);  //プログラム終了
 		return 0;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case ID_MENU_NEW:
+				break;
+
+		case ID_MENU_OPEN:
+				break;
+
+		case ID_MENU_SAVE:
+			Stage* pStage = (Stage*)pRootJob->FindObject("Stage");
+			pStage->Save();
+			break;
+		}
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -175,9 +194,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-	switch (msg)
+	if (pRootJob)
 	{
-
+		Stage* pStage = (Stage*)pRootJob->FindObject("Stage");
+		return pStage->DialogProc(hDlg, msg, wp, lp);
 	}
-	return FALSE;
+	else
+	{
+		return FALSE;
+	}
 }

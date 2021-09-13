@@ -60,7 +60,7 @@ BEGIN
     CONTROL         "種類を変える",IDC_RADIO_CHANGE,"Button",BS_AUTORADIOBUTTON,24,54,58,10
     GROUPBOX        "編集モード",IDC_STATIC,12,6,98,66
     GROUPBOX        "地形の種類",IDC_STATIC,12,78,98,30
-    COMBOBOX        IDC_COMBO1,24,90,75,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO1,24,90,75,81,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -91,6 +91,23 @@ END
 IDD_DIALOG1 AFX_DIALOG_LAYOUT
 BEGIN
     0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "ファイル"
+    BEGIN
+        MENUITEM "新規作成",                        ID_MENU_NEW
+        MENUITEM "開く",                          ID_MENU_OPEN
+        MENUITEM "保存",                          ID_MENU_SAVE
+    END
+    MENUITEM "編集",                          0
 END
 
 #endif    // 日本語 (日本) resources

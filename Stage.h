@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 #include "Engine/GameObject.h"
 
 //◆◆◆を管理するクラス
@@ -11,6 +12,10 @@ class Stage : public GameObject
         int type;
         int height;
     }table_[15][15];
+
+    int status_;    //上げる？　下げる？　変える？
+    int select_;    
+
 
 public:
     //コンストラクタ
@@ -30,4 +35,8 @@ public:
 
     //開放
     void Release() override;
+
+    BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
+    void Save();
 };

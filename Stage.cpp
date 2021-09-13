@@ -4,6 +4,7 @@
 #include "Engine/Direct3D.h"
 #include "Engine/Camera.h"
 #include "Engine/Fbx.h"
+#include "resource.h"
 
 //コンストラクタ
 Stage::Stage(GameObject* parent)
@@ -120,8 +121,24 @@ void Stage::Update()
                     //当たったかテスト
                     if (data.hit)
                     {
-                        
-                        table_[x][z].height++;
+                        switch (status_)
+                        {
+                        case 0:
+                            table_[x][z].height++;
+                            break;
+
+                        case 1:
+                            table_[x][z].height--;
+                            if (table_[x][z].height <= 0)
+                            {
+                                table_[x][z].height = 1;
+                            }
+                            break;
+
+                        case 2:
+                            table_[x][z].type = select_;
+                            break;
+                        }
 
                     }
                 }
@@ -158,4 +175,74 @@ void Stage::Draw()
 //開放
 void Stage::Release()
 {
+}
+
+BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        HWND hCtrl;
+        hCtrl = GetDlgItem(hDlg, IDC_RADIO_UP);
+        SendMessage(hCtrl, BM_SETCHECK, BST_CHECKED, 0);
+
+        hCtrl = GetDlgItem(hDlg, IDC_COMBO1);
+        SendMessage(hCtrl, CB_ADDSTRING, 0, (LPARAM)"デフォルト");
+        SendMessage(hCtrl, CB_ADDSTRING, 0, (LPARAM)"レンガ");
+        SendMessage(hCtrl, CB_ADDSTRING, 0, (LPARAM)"草原");
+        SendMessage(hCtrl, CB_ADDSTRING, 0, (LPARAM)"砂");
+        SendMessage(hCtrl, CB_ADDSTRING, 0, (LPARAM)"水");
+        SendMessage(hCtrl, CB_SETCURSEL, 0, 0);
+
+        return TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wp))
+        {
+        case IDC_RADIO_UP:
+            status_ = 0;
+            return TRUE;
+
+        case IDC_RADIO_DOWN:
+            status_ = 1;
+            return TRUE;
+
+        case IDC_RADIO_CHANGE:
+            status_ = 2;
+            return TRUE;
+
+        case IDC_COMBO1:
+            HWND hCtrl;
+            hCtrl = GetDlgItem(hDlg, IDC_COMBO1);
+            select_ = (int)SendMessage(hCtrl, CB_GETCURSEL, 0, 0);
+            
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+void Stage::Save()
+{
+    HANDLE hFile;        //ファイルのハンドル
+    hFile = CreateFile(
+        "test.txt",                 //ファイル名
+        GENERIC_WRITE,           //アクセスモード（書き込み用）
+        0,                      //共有（なし）
+        NULL,                   //セキュリティ属性（継承しない）
+        CREATE_ALWAYS,           //作成方法
+        FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
+        NULL);                  //拡張属性（なし）
+
+    char s[] = "こんにちは";
+
+    DWORD dwBytes = 0;  //書き込み位置
+    WriteFile(
+        hFile,                   //ファイルハンドル
+        s,                  //保存するデータ（文字列）
+        (DWORD)strlen(s),   //書き込む文字数
+        &dwBytes,                //書き込んだサイズを入れる変数
+        NULL);                   //オーバーラップド構造体（今回は使わない）
+
+    CloseHandle(hFile);
 }
