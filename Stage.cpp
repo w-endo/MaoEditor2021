@@ -224,9 +224,31 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 void Stage::Save()
 {
+    char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+
+    //「ファイルを保存」ダイアログの設定
+    OPENFILENAME ofn;                         	            //名前をつけて保存ダイアログの設定用構造体
+    ZeroMemory(&ofn, sizeof(ofn));            	            //構造体初期化
+    ofn.lStructSize = sizeof(OPENFILENAME);             	//構造体のサイズ
+    ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")  //─┬ファイルの種類
+        TEXT("すべてのファイル(*.*)\0*.*\0\0");             //─┘
+    ofn.lpstrFile = fileName;               	            //ファイル名
+    ofn.nMaxFile = MAX_PATH;               	                //パスの最大文字数
+    ofn.Flags = OFN_OVERWRITEPROMPT;   		                //フラグ（同名ファイルが存在したら上書き確認）
+    ofn.lpstrDefExt = "map";                  	            //デフォルト拡張子
+
+    //「ファイルを保存」ダイアログ
+    BOOL selFile;
+    selFile = GetSaveFileName(&ofn);
+
+    //キャンセルしたら中断
+    if (selFile == FALSE) return;
+
+
+
     HANDLE hFile;        //ファイルのハンドル
     hFile = CreateFile(
-        "test.txt",                 //ファイル名
+        fileName,                 //ファイル名
         GENERIC_WRITE,           //アクセスモード（書き込み用）
         0,                      //共有（なし）
         NULL,                   //セキュリティ属性（継承しない）
@@ -238,11 +260,63 @@ void Stage::Save()
 
     DWORD dwBytes = 0;  //書き込み位置
     WriteFile(
-        hFile,                   //ファイルハンドル
+        hFile,              //ファイルハンドル
         s,                  //保存するデータ（文字列）
         (DWORD)strlen(s),   //書き込む文字数
-        &dwBytes,                //書き込んだサイズを入れる変数
-        NULL);                   //オーバーラップド構造体（今回は使わない）
+        &dwBytes,           //書き込んだサイズを入れる変数
+        NULL);              //オーバーラップド構造体（今回は使わない）
+
+    CloseHandle(hFile);
+}
+
+void Stage::Load()
+{
+    char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+
+     //「ファイルを保存」ダイアログの設定
+    OPENFILENAME ofn;                         	            //名前をつけて保存ダイアログの設定用構造体
+    ZeroMemory(&ofn, sizeof(ofn));            	            //構造体初期化
+    ofn.lStructSize = sizeof(OPENFILENAME);             	//構造体のサイズ
+    ofn.lpstrFilter = TEXT("マップデータ(*.map)\0*.map\0")  //─┬ファイルの種類
+        TEXT("すべてのファイル(*.*)\0*.*\0\0");             //─┘
+    ofn.lpstrFile = fileName;               	            //ファイル名
+    ofn.nMaxFile = MAX_PATH;               	                //パスの最大文字数
+    ofn.Flags = OFN_FILEMUSTEXIST;   		                //フラグ（同名ファイルが存在したら上書き確認）
+    ofn.lpstrDefExt = "map";                  	            //デフォルト拡張子
+
+    //「ファイルを保存」ダイアログ
+    BOOL selFile;
+    selFile = GetOpenFileName(&ofn);
+
+    //キャンセルしたら中断
+    if (selFile == FALSE) return;
+
+    HANDLE hFile;        //ファイルのハンドル
+    hFile = CreateFile(
+        fileName,                 //ファイル名
+        GENERIC_READ,           //アクセスモード（書き込み用）
+        0,                      //共有（なし）
+        NULL,                   //セキュリティ属性（継承しない）
+        OPEN_EXISTING,           //作成方法
+        FILE_ATTRIBUTE_NORMAL,  //属性とフラグ（設定なし）
+        NULL);                  //拡張属性（なし）
+
+
+      //ファイルのサイズを取得
+    DWORD fileSize = GetFileSize(hFile, NULL);
+
+    //ファイルのサイズ分メモリを確保
+    char* data;
+    data = new char[fileSize];
+
+    DWORD dwBytes = 0; //読み込み位置
+
+    ReadFile(
+        hFile,     //ファイルハンドル
+        data,      //データを入れる変数
+        fileSize,  //読み込むサイズ
+        &dwBytes,  //読み込んだサイズ
+        NULL);     //オーバーラップド構造体（今回は使わない）
 
     CloseHandle(hFile);
 }
