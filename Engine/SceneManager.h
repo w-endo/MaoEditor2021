@@ -4,7 +4,7 @@
 //ゲームに登場するシーン
 enum SCENE_ID
 {
-    SCENE_ID_EDIT = 0,
+    SCENE_ID_SAMPLE = 0,
 };
 
 //◆◆◆を管理するクラス

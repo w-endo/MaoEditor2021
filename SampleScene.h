@@ -3,12 +3,12 @@
 
 
 //■■シーンを管理するクラス
-class EditScene : public GameObject
+class SampleScene : public GameObject
 {
 public:
 	//コンストラクタ
 	//引数：parent  親オブジェクト（SceneManager）
-	EditScene(GameObject* parent);
+	SampleScene(GameObject* parent);
 
 	//初期化
 	void Initialize() override;

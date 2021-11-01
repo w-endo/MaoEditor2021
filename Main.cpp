@@ -6,8 +6,7 @@
 #include "Engine/Input.h"
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
-#include "Stage.h"
-#include "resource.h"
+
 
 #pragma comment(lib, "winmm.lib")
 
@@ -41,7 +40,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	wc.hIcon = LoadIcon(NULL, IDI_QUESTION); //アイコン
 	wc.hIconSm = LoadIcon(NULL, IDI_WINLOGO);   //小さいアイコン
 	wc.hCursor = LoadCursor(NULL, IDC_WAIT);   //マウスカーソル
-	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);                     //メニュー（なし）
+	wc.lpszMenuName = NULL;                     //メニュー（なし）
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //背景（白）
@@ -86,7 +85,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 	pRootJob = new RootJob;
 	pRootJob->Initialize();
 
-	HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
 
 	//メッセージループ（何か起きるのを待つ）
 	MSG msg;
@@ -175,43 +173,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);  //プログラム終了
 		return 0;
-
-	case WM_COMMAND:
-		switch (LOWORD(wParam))
-		{
-		case ID_MENU_NEW:
-			break;
-
-		case ID_MENU_OPEN:
-		{
-			Stage* pStage = (Stage*)pRootJob->FindObject("Stage");
-			pStage->Load();
-			break;
-		}
-
-		case ID_MENU_SAVE:
-		{
-			Stage* pStage = (Stage*)pRootJob->FindObject("Stage");
-			pStage->Save();
-			break;
-		}
-		}
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 
-
-
-BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-	if (pRootJob)
-	{
-		Stage* pStage = (Stage*)pRootJob->FindObject("Stage");
-		return pStage->DialogProc(hDlg, msg, wp, lp);
-	}
-	else
-	{
-		return FALSE;
-	}
-}

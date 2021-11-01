@@ -1,5 +1,5 @@
 #include "SceneManager.h"
-#include "../EditScene.h"
+#include "../SampleScene.h"
 #include "Model.h"
 
 
@@ -17,9 +17,9 @@ SceneManager::~SceneManager()
 //èâä˙âª
 void SceneManager::Initialize()
 {
-    nowScene_ = SCENE_ID_EDIT;
-    nextScene_ = SCENE_ID_EDIT;
-    Instantiate<EditScene>(this);
+    nowScene_ = SCENE_ID_SAMPLE;
+    nextScene_ = SCENE_ID_SAMPLE;
+    Instantiate<SampleScene>(this);
 }
 
 //çXêV
@@ -33,7 +33,7 @@ void SceneManager::Update()
 
         switch (nextScene_)
         {
-        case SCENE_ID_EDIT: Instantiate<EditScene>(this); break;
+        case SCENE_ID_SAMPLE: Instantiate<SampleScene>(this); break;
 
         }
 

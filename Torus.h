@@ -2,15 +2,15 @@
 #include "Engine/GameObject.h"
 
 //◆◆◆を管理するクラス
-class Controller : public GameObject
+class Torus : public GameObject
 {
-
+    int hModel_;    //モデル番号
 public:
     //コンストラクタ
-    Controller(GameObject* parent);
+    Torus(GameObject* parent);
 
     //デストラクタ
-    ~Controller();
+    ~Torus();
 
     //初期化
     void Initialize() override;
