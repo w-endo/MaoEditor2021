@@ -3,14 +3,25 @@ cbuffer gloabal
 	float4x4 matWVP;
 };
 
-
-float4 VS(float4 pos : POSITION) : SV_POSITION
+struct VS_OUT
 {
-	float4 p = mul(pos, matWVP);
-	return p;
+	float4 pos	 : SV_POSITION;
+	float4 color : COLOR;
+};
+
+
+VS_OUT VS(float4 pos : POSITION, float4 normal : NORMAL)
+{
+	VS_OUT outData;
+
+	float4 light = float4(0, 1, 0, 0);
+
+	outData.pos = mul(pos, matWVP);
+	outData.color = dot(normal, light);
+	return outData;
 }
 
-float4 PS(float4 pos : SV_POSITION) : SV_Target
+float4 PS(VS_OUT inData) : SV_Target
 {
-	return float4(1, 1, 1, 1);
+	return inData.color;
 }
