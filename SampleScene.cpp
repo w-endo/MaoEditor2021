@@ -1,4 +1,6 @@
 #include "SampleScene.h"
+#include "Engine/Input.h"
+#include "Engine/SceneManager.h"
 #include "Torus.h"
 
 //コンストラクタ
@@ -16,6 +18,7 @@ void SampleScene::Initialize()
 //更新
 void SampleScene::Update()
 {
+
 }
 
 //描画

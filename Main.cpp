@@ -7,7 +7,6 @@
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
 
-
 #pragma comment(lib, "winmm.lib")
 
 //定数宣言
@@ -22,7 +21,6 @@ BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 RootJob* pRootJob;
 
-#include <string>
 
 
 //エントリーポイント
@@ -131,9 +129,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 			countFps++;
 
-			char str[16];
-			wsprintf(str, "X:%d,Y:%d", (int)Input::GetMousePosition().x, (int)Input::GetMousePosition().y );
-			SetWindowText(hWnd, str);
 
 
 			//ゲームの処理
@@ -173,6 +168,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);  //プログラム終了
 		return 0;
+
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
