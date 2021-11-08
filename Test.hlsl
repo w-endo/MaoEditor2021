@@ -24,6 +24,7 @@ VS_OUT VS(float4 pos : POSITION, float4 normal : NORMAL)
 	outData.color = dot(normal, light);
 
 	outData.color *= diffuseColor;
+
 	return outData;
 }
 
