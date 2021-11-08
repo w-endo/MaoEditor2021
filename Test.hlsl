@@ -1,6 +1,7 @@
 cbuffer gloabal
 {
 	float4x4 matWVP;
+	float4x4 matNormal;
 };
 
 struct VS_OUT
@@ -14,7 +15,9 @@ VS_OUT VS(float4 pos : POSITION, float4 normal : NORMAL)
 {
 	VS_OUT outData;
 
-	float4 light = float4(0, 1, 0, 0);
+	float4 light = float4(1, 0, 0, 0);
+
+	normal = mul(normal, matNormal);
 
 	outData.pos = mul(pos, matWVP);
 	outData.color = dot(normal, light);
