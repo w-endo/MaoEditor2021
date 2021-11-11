@@ -37,27 +37,31 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 float4 PS(VS_OUT inData) : SV_Target
 {
-	float4 light = float4(1, 0, 0, 0);
+	float4 light = normalize( float4(1, 1, -1, 0) );
 
 	float4 normal = normalize(inData.normal);
 
 	float4 diffuse = saturate( dot(normal, light) );
+	float4 ambient;
+
 	if (isTexture)
 	{
 		diffuse *= g_texture.Sample(g_sampler, inData.uv);
+		ambient = g_texture.Sample(g_sampler, inData.uv) * float4(0.2, 0.2, 0.2, 1);
 	}
 	else
 	{
 		diffuse *= diffuseColor;
+		ambient = diffuseColor * float4(0.2, 0.2, 0.2, 1);
 	}
 
 
 	float4 R = normalize(reflect(-light, normal));
 	float ks = 2;
-	float shininess =8;
+	float shininess = 8;
 	float4 is = float4(1, 1, 1, 1);
 	float4 specular = ks * pow( saturate(  dot(R, normalize(inData.eye))  ), shininess) * is;
 
-	return diffuse + specular;
+	return diffuse + specular + ambient;
 
 }
