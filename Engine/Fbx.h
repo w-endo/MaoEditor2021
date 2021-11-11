@@ -33,7 +33,8 @@ class Fbx
 		XMMATRIX	matWVP;
 		XMMATRIX	matNormal;
 		XMFLOAT4	diffuseColor;
-		int		isTexture;
+		XMFLOAT4	camPos;
+		int			isTexture;
 	};
 
 	struct VERTEX

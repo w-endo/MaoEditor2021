@@ -56,3 +56,10 @@ XMMATRIX Camera::GetProjectionMatrix()
 {
 	return projMatrix_;
 }
+
+XMFLOAT3 Camera::GetPosition()
+{
+	XMFLOAT3 f;
+	XMStoreFloat3(&f, position_);
+	return f;
+}

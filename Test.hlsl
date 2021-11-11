@@ -6,6 +6,7 @@ cbuffer gloabal
 	float4x4 matWVP;
 	float4x4 matNormal;
 	float4	 diffuseColor;
+	float4	 camPos;
 	bool		isTexture;
 };
 
@@ -30,8 +31,15 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 	outData.uv = uv;
 
-	//outData.color *= diffuseColor;
-	//outData.color *= g_texture.Sample(g_sampler, uv);
+	float4 R = reflect(-light, normal);
+	float4 V = normalize(camPos - pos);
+	float ks = 2;
+	float4 shininess = 5;
+	float4 is = float4(1, 1, 1, 1);
+
+	float4 specular = ks * pow(dot(R, V), shininess) * is;
+	outData.color = specular;
+
 
 	return outData;
 }
