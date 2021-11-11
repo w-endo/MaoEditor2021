@@ -13,8 +13,9 @@ cbuffer gloabal
 struct VS_OUT
 {
 	float4 pos	 : SV_POSITION;
-	float4 color : COLOR;
 	float2 uv	 : TEXCOORD;
+	float4 eye	 : TEXCOORD1;
+	float4 normal: NORMAL;
 };
 
 
@@ -22,23 +23,13 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 {
 	VS_OUT outData;
 
-	float4 light = float4(1, 0, 0, 0);
-
-	normal = mul(normal, matNormal);
+	normal.w = 0;
+	outData.normal = mul(normal, matNormal);
 
 	outData.pos = mul(pos, matWVP);
-	outData.color = dot(normal, light);
-
+	
+	outData.eye = normalize(camPos - pos);
 	outData.uv = uv;
-
-	float4 R = reflect(-light, normal);
-	float4 V = normalize(camPos - pos);
-	float ks = 2;
-	float4 shininess = 5;
-	float4 is = float4(1, 1, 1, 1);
-
-	float4 specular = ks * pow(dot(R, V), shininess) * is;
-	outData.color = specular;
 
 
 	return outData;
@@ -46,9 +37,27 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 float4 PS(VS_OUT inData) : SV_Target
 {
+	float4 light = float4(1, 0, 0, 0);
+
+	float4 normal = normalize(inData.normal);
+
+	float4 diffuse = saturate( dot(normal, light) );
 	if (isTexture)
 	{
-		return inData.color *= g_texture.Sample(g_sampler, inData.uv);
+		diffuse *= g_texture.Sample(g_sampler, inData.uv);
 	}
-	return inData.color *= diffuseColor;
+	else
+	{
+		diffuse *= diffuseColor;
+	}
+
+
+	float4 R = normalize(reflect(-light, normal));
+	float ks = 2;
+	float shininess =8;
+	float4 is = float4(1, 1, 1, 1);
+	float4 specular = ks * pow( saturate(  dot(R, normalize(inData.eye))  ), shininess) * is;
+
+	return diffuse + specular;
+
 }
