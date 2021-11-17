@@ -1,5 +1,6 @@
-Texture2D		g_texture : register(t0);	//テクスチャー
-SamplerState	g_sampler : register(s0);	//サンプラー
+Texture2D		g_texture : register(t0);		//テクスチャー
+Texture2D		g_textureNormal : register(t1);	//テクスチャー
+SamplerState	g_sampler : register(s0);		//サンプラー
 
 cbuffer gloabal
 {
@@ -41,7 +42,9 @@ float4 PS(VS_OUT inData) : SV_Target
 {
 	float4 light = normalize(float4(1, 1, -1, 0));
 
-	float4 normal = normalize(inData.normal);
+	//float4 normal = normalize(inData.normal);
+	float4 normal = g_textureNormal.Sample(g_sampler, inData.uv) * 2 - 1;
+	normal = normalize(normal);
 
 	float4 diffuse = saturate(dot(normal, light));
 	float4 ambient;

@@ -25,6 +25,7 @@ class Fbx
 	struct MATERIAL
 	{
 		Texture*	pTexture;
+		Texture*	pTextureNormal;
 		XMFLOAT4	diffuse;
 		XMFLOAT4	specular;
 		float		shininess;
