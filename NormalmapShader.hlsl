@@ -29,7 +29,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 	outData.normal = mul(normal, matNormal);
 
 	outData.pos = mul(pos, matWVP);
-	
+
 	outData.eye = normalize(camPos - pos);
 	outData.uv = uv;
 
@@ -39,11 +39,11 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
 
 float4 PS(VS_OUT inData) : SV_Target
 {
-	float4 light = normalize( float4(1, 1, -1, 0) );
+	float4 light = normalize(float4(1, 1, -1, 0));
 
 	float4 normal = normalize(inData.normal);
 
-	float4 diffuse = saturate( dot(normal, light) );
+	float4 diffuse = saturate(dot(normal, light));
 	float4 ambient;
 
 	if (isTexture)
@@ -60,7 +60,7 @@ float4 PS(VS_OUT inData) : SV_Target
 
 	float4 R = normalize(reflect(-light, normal));
 	float ks = 2;
-	float4 specular = ks * pow( saturate(  dot(R, normalize(inData.eye))  ), shininess) * speculer;
+	float4 specular = ks * pow(saturate(dot(R, normalize(inData.eye))), shininess) * speculer;
 
 	return diffuse + specular + ambient;
 

@@ -24,8 +24,10 @@ class Fbx
 	//ƒ}ƒeƒŠƒAƒ‹
 	struct MATERIAL
 	{
-		Texture* pTexture;
+		Texture*	pTexture;
 		XMFLOAT4	diffuse;
+		XMFLOAT4	specular;
+		float		shininess;
 	};
 
 	struct CONSTANT_BUFFER
@@ -33,7 +35,9 @@ class Fbx
 		XMMATRIX	matWVP;
 		XMMATRIX	matNormal;
 		XMFLOAT4	diffuseColor;
+		XMFLOAT4	specular;
 		XMFLOAT4	camPos;
+		float		shininess;
 		int			isTexture;
 	};
 

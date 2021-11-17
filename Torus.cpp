@@ -17,15 +17,18 @@ Torus::~Torus()
 void Torus::Initialize()
 {
     //モデルデータのロード
-    hModel_ = Model::Load("Assets\\Torus.fbx");
+    hModel_ = Model::Load("Assets\\Ball.fbx");
     assert(hModel_ >= 0);
 
+    transform_.scale_.x = 3.0f;
+    transform_.scale_.y = 3.0f;
+    transform_.scale_.z = 3.0f;
 }
 
 //更新
 void Torus::Update()
 {
-    transform_.rotate_.y += 2;
+    transform_.rotate_.y += 1;
 }
 
 //描画
