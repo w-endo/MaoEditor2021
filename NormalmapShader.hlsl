@@ -19,34 +19,52 @@ struct VS_OUT
 	float2 uv	 : TEXCOORD;
 	float4 eye	 : TEXCOORD1;
 	float4 normal: NORMAL;
+	float4 light : TEXCOORD2;
 };
 
 
-VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL)
+VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, float4 tangent : TANGENT)
 {
 	VS_OUT outData;
 
+	float3 binormal = cross(normal, tangent);
+
+	tangent.w = 0;
+	//binormal.w = 0;
 	normal.w = 0;
-	outData.normal = mul(normal, matNormal);
+
+	
+	tangent = mul(tangent, matNormal);
+	binormal = mul(binormal, matNormal);
+	normal = mul(normal, matNormal);
+
+	float4 light = normalize(float4(1, 1, -1, 0));
+	outData.light.x = dot(light, tangent);
+	outData.light.y = dot(light, binormal);
+	outData.light.z = dot(light, normal);
+
 
 	outData.pos = mul(pos, matWVP);
 
-	outData.eye = normalize(camPos - pos);
-	outData.uv = uv;
+	float4 eye = normalize(camPos - pos);
+	outData.eye.x = dot(eye, tangent);
+	outData.eye.y = dot(eye, binormal);
+	outData.eye.z = dot(eye, normal);
 
+	outData.uv = uv;
 
 	return outData;
 }
 
 float4 PS(VS_OUT inData) : SV_Target
 {
-	float4 light = normalize(float4(1, 1, -1, 0));
+	
 
 	//float4 normal = normalize(inData.normal);
 	float4 normal = g_textureNormal.Sample(g_sampler, inData.uv) * 2 - 1;
 	normal = normalize(normal);
 
-	float4 diffuse = saturate(dot(normal, light));
+	float4 diffuse = saturate(dot(normal, inData.light));
 	float4 ambient;
 
 	if (isTexture)
@@ -61,7 +79,7 @@ float4 PS(VS_OUT inData) : SV_Target
 	}
 
 
-	float4 R = normalize(reflect(-light, normal));
+	float4 R = normalize(reflect(-inData.light, normal));
 	float ks = 2;
 	float4 specular = ks * pow(saturate(dot(R, normalize(inData.eye))), shininess) * speculer;
 

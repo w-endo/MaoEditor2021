@@ -47,6 +47,7 @@ class Fbx
 		XMVECTOR position;
 		XMVECTOR uv;
 		XMVECTOR normal;
+		XMVECTOR tangent;
 	};
 
 	int vertexCount_;	//í∏ì_êî
