@@ -34,9 +34,9 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 	normal.w = 0;
 
 	
-	tangent = mul(tangent, matNormal);
-	binormal = mul(binormal, matNormal);
-	normal = mul(normal, matNormal);
+	tangent = normalize(mul(tangent, matNormal));
+	binormal = normalize(mul(binormal, matNormal));
+	normal = normalize(mul(normal, matNormal));
 
 	float4 light = normalize(float4(1, 1, -1, 0));
 	outData.light.x = dot(light, tangent);
@@ -58,9 +58,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 
 float4 PS(VS_OUT inData) : SV_Target
 {
-	
-
-	//float4 normal = normalize(inData.normal);
+	inData.light = normalize(inData.light);
 	float4 normal = g_textureNormal.Sample(g_sampler, inData.uv) * 2 - 1;
 	normal = normalize(normal);
 
@@ -83,6 +81,6 @@ float4 PS(VS_OUT inData) : SV_Target
 	float ks = 2;
 	float4 specular = ks * pow(saturate(dot(R, normalize(inData.eye))), shininess) * speculer;
 
-	return diffuse + specular + ambient;
+	return diffuse +specular + ambient;
 
 }

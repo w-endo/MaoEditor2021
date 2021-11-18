@@ -258,7 +258,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 			//テクスチャの数数
 			int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
-			pMaterialList_[i].pTexture = nullptr;
+			pMaterialList_[i].pTextureNormal = nullptr;
 
 			//テクスチャあり
 			if (fileTextureCount > 0)
