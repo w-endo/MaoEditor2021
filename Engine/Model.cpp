@@ -5,7 +5,7 @@ namespace Model
     std::vector<ModelData*> datas;
 }
 
-int Model::Load(std::string fileName)
+int Model::Load(std::string fileName, SHADER_TYPE shaderType)
 {
     ModelData* pModelData = new ModelData;
     pModelData->fileName = fileName;
@@ -24,7 +24,7 @@ int Model::Load(std::string fileName)
     if (!isExist)
     {
         pModelData->pFbx = new Fbx;
-        pModelData->pFbx->Load(fileName);
+        pModelData->pFbx->Load(fileName, shaderType);
     }
 
     datas.push_back(pModelData);

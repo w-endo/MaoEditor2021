@@ -33,7 +33,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 	//binormal.w = 0;
 	normal.w = 0;
 
-	
+
 	tangent = normalize(mul(tangent, matNormal));
 	binormal = normalize(mul(binormal, matNormal));
 	normal = normalize(mul(normal, matNormal));
@@ -82,5 +82,6 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 specular = ks * pow(saturate(dot(R, normalize(inData.eye))), shininess) * speculer;
 
 	float4 color = diffuse + specular + ambient;
+	color.a = 0.5;
 	return color;
 }

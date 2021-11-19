@@ -3,6 +3,7 @@
 #include <vector>
 #include "Transform.h"
 #include "Fbx.h"
+#include "Direct3D.h"
 
 namespace Model
 {
@@ -20,7 +21,7 @@ namespace Model
 	//モデルをロード
 	//引数：fileName　ファイル名
 	//戻値：そのモデルデータに割り当てられた番号
-	int Load(std::string fileName);
+	int Load(std::string fileName, SHADER_TYPE shaderType);
 
 	//ワールド行列を設定
 	//引数：handle		設定したいモデルの番号

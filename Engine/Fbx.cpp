@@ -9,8 +9,10 @@ Fbx::Fbx():
 {
 }
 
-HRESULT Fbx::Load(std::string fileName)
+HRESULT Fbx::Load(std::string fileName, SHADER_TYPE shaderType)
 {
+	shaderType_ = shaderType;
+
 	//マネージャを生成
 	FbxManager* pFbxManager = FbxManager::Create();
 
@@ -283,7 +285,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_TEST);
+	Direct3D::SetShader(shaderType_);
 
 
 

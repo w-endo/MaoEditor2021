@@ -2,6 +2,7 @@
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
 #include "Torus.h"
+#include "Water.h"
 
 //コンストラクタ
 SampleScene::SampleScene(GameObject* parent)
@@ -13,6 +14,7 @@ SampleScene::SampleScene(GameObject* parent)
 void SampleScene::Initialize()
 {
 	Instantiate<Torus>(this);
+	Instantiate<Water>(this);
 }
 
 //更新

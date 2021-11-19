@@ -5,6 +5,7 @@
 #include <string>
 #include "Transform.h"
 #include "Texture.h"
+#include "Direct3D.h"
 
 #pragma comment(lib, "LibFbxSDK-MT.lib")
 #pragma comment(lib, "LibXml2-MT.lib")
@@ -63,6 +64,8 @@ class Fbx
 	VERTEX* pVertices_;
 	int** ppIndex_;
 
+	SHADER_TYPE shaderType_;
+
 	void InitVertex(fbxsdk::FbxMesh* mesh);
 	void InitIndex(fbxsdk::FbxMesh* mesh);
 	void IntConstantBuffer();
@@ -70,7 +73,7 @@ class Fbx
 public:
 
 	Fbx();
-	HRESULT Load(std::string fileName);
+	HRESULT Load(std::string fileName, SHADER_TYPE shaderType);
 	void    Draw(Transform& transform);
 	void    Release();
 
