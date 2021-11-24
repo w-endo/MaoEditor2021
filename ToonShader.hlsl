@@ -44,6 +44,20 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 normal = normalize(inData.normal);
 
 	float4 diffuse = saturate(dot(normal, light));
+/*	if (diffuse.r < 0.3)
+	{
+		diffuse = 0.3;
+	}
+	else if (diffuse.r < 0.5)
+	{
+		diffuse = 0.8;
+	}
+	else
+	{
+		diffuse = 1;
+	}
+*/
+
 	float4 ambient;
 
 	if (isTexture)
