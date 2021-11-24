@@ -7,7 +7,7 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-enum SHADER_TYPE { SHADER_3D, SHADER_2D, SHADER_TEST, SHADER_WATER, SHADER_MAX };
+enum SHADER_TYPE { SHADER_3D, SHADER_2D, SHADER_TEST, SHADER_WATER, SHADER_ENVMAP, SHADER_MAX };
 
 
 namespace Direct3D
@@ -26,6 +26,7 @@ namespace Direct3D
 	void InitShader3D();
 	void InitShaderTest();
 	void InitShaderWater();
+	void InitShaderEnv();
 
 	//•`‰æŠJŽn
 	void BeginDraw();

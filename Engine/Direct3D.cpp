@@ -148,6 +148,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	InitShader3D();
 	InitShaderTest();
 	InitShaderWater();
+	InitShaderEnv();
 }
 
 //シェーダー準備(2D)
@@ -271,6 +272,7 @@ void Direct3D::InitShaderWater()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 1,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 2,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 3,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
 	};
 	pDevice->CreateInputLayout(layout, 4, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &shaderBundle[SHADER_WATER].pVertexLayout);
 
@@ -290,6 +292,41 @@ void Direct3D::InitShaderWater()
 	rdc.FillMode = D3D11_FILL_SOLID;
 	rdc.FrontCounterClockwise = FALSE;
 	pDevice->CreateRasterizerState(&rdc, &shaderBundle[SHADER_WATER].pRasterizerState);
+
+}
+
+void Direct3D::InitShaderEnv()
+{
+	// 頂点シェーダの作成（コンパイル）
+	ID3DBlob* pCompileVS = nullptr;
+	D3DCompileFromFile(L"EnvShader.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	assert(pCompileVS != nullptr);
+	pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &shaderBundle[SHADER_ENVMAP].pVertexShader);
+
+	//頂点インプットレイアウト
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 1,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 2,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	pDevice->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &shaderBundle[SHADER_ENVMAP].pVertexLayout);
+
+
+
+	pCompileVS->Release();
+
+	// ピクセルシェーダの作成（コンパイル）
+	ID3DBlob* pCompilePS = nullptr;
+	D3DCompileFromFile(L"EnvShader.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &shaderBundle[SHADER_ENVMAP].pPixelShader);
+	pCompilePS->Release();
+
+	//ラスタライザ作成
+	D3D11_RASTERIZER_DESC rdc = {};
+	rdc.CullMode = D3D11_CULL_BACK;
+	rdc.FillMode = D3D11_FILL_SOLID;
+	rdc.FrontCounterClockwise = FALSE;
+	pDevice->CreateRasterizerState(&rdc, &shaderBundle[SHADER_ENVMAP].pRasterizerState);
 
 }
 
