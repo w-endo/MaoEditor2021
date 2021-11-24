@@ -318,6 +318,14 @@ void Fbx::Draw(Transform& transform)
 		cb.shininess = pMaterialList_[i].shininess;
 		cb.camPos = XMFLOAT4(Camera::GetPosition().x, Camera::GetPosition().y, Camera::GetPosition().z, 0);
 
+		if (shaderType_ == SHADER_WATER)
+		{
+			static float scroll = 0.0f;
+			scroll += 0.001f;
+			cb.scroll = scroll;
+		}
+
+
 		D3D11_MAPPED_SUBRESOURCE pdata;
 		Direct3D::pContext->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
 		memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る

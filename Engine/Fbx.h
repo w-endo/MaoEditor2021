@@ -41,6 +41,7 @@ class Fbx
 		XMFLOAT4	camPos;
 		float		shininess;
 		int			isTexture;
+		float		scroll;
 	};
 
 	struct VERTEX

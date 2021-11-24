@@ -11,6 +11,7 @@ cbuffer gloabal
 	float4	 camPos;
 	float	 shininess;
 	bool		isTexture;
+	float	scroll;
 };
 
 struct VS_OUT
@@ -38,7 +39,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 	binormal = normalize(mul(binormal, matNormal));
 	normal = normalize(mul(normal, matNormal));
 
-	float4 light = normalize(float4(0.5, 3, 1, 0));
+	float4 light = normalize(float4(0.0, 2, 1, 0));
 	outData.light.x = dot(light, tangent);
 	outData.light.y = dot(light, binormal);
 	outData.light.z = dot(light, normal);
@@ -58,8 +59,13 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD, float4 normal : NORMAL, f
 
 float4 PS(VS_OUT inData) : SV_Target
 {
+	float2 normalUV1 = float2(inData.uv.x + scroll, inData.uv.y + scroll / 2);
+	float2 normalUV2 = float2(inData.uv.x - scroll, inData.uv.y - scroll / 2);
+
 	inData.light = normalize(inData.light);
-	float4 normal = g_textureNormal.Sample(g_sampler, inData.uv) * 2 - 1;
+	float4 normal1 = g_textureNormal.Sample(g_sampler, normalUV1 * 1.5) * 2 - 1;
+	float4 normal2 = g_textureNormal.Sample(g_sampler, normalUV2 * -1.3) * 2 - 1;
+	float4 normal = normal1 + normal2;
 	normal = normalize(normal);
 
 	float4 diffuse = saturate(dot(normal, inData.light));
@@ -67,8 +73,10 @@ float4 PS(VS_OUT inData) : SV_Target
 
 	if (isTexture)
 	{
-		diffuse *= g_texture.Sample(g_sampler, inData.uv);
-		ambient = g_texture.Sample(g_sampler, inData.uv) * float4(0.2, 0.2, 0.2, 1);
+		float2 uvDiff = float2(inData.uv.x + scroll*0.8, inData.uv.y + scroll *0.3);
+
+		diffuse *= g_texture.Sample(g_sampler, uvDiff *2);
+		ambient = g_texture.Sample(g_sampler, uvDiff *2) * float4(0.2, 0.2, 0.2, 1);
 	}
 	else
 	{
@@ -78,10 +86,12 @@ float4 PS(VS_OUT inData) : SV_Target
 
 
 	float4 R = normalize(reflect(-inData.light, normal));
-	float ks = 2;
-	float4 specular = ks * pow(saturate(dot(R, normalize(inData.eye))), shininess) * speculer;
+	float ks = 40;
+	float4 specular = ks * pow(saturate(dot(R, normalize(inData.eye))), 40) * speculer;
 
 	float4 color = diffuse + specular + ambient;
-	color.a = 0.5;
+	color.a = (color.r + color.g + color.b) / 3;
+	color.a *= color.a;
+	color.a *= color.a;
 	return color;
 }
