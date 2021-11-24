@@ -82,7 +82,7 @@
     <FxCompile Include="Test.hlsl" />
     <FxCompile Include="NormalmapShader.hlsl" />
     <FxCompile Include="WaterShader.hlsl" />
-    <FxCompile Include="EnvShader.hlsl" />
+    <FxCompile Include="ToonShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Camera.h">

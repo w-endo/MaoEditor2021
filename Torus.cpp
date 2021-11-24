@@ -17,7 +17,7 @@ Torus::~Torus()
 void Torus::Initialize()
 {
     //モデルデータのロード
-    hModel_ = Model::Load("Assets\\Ball.fbx", SHADER_ENVMAP);
+    hModel_ = Model::Load("Assets\\Ball.fbx", SHADER_TOON);
     assert(hModel_ >= 0);
 
     transform_.scale_.x = 2.0f;

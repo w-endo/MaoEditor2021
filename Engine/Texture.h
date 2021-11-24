@@ -12,6 +12,7 @@ public:
 	Texture();
 	~Texture();
 	HRESULT Load(std::string fileName);
+	HRESULT LoadCube(std::string fileName);
 	void Release();
 
 	ID3D11SamplerState* GetSampler();

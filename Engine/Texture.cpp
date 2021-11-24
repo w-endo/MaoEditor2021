@@ -14,7 +14,7 @@ Texture::~Texture()
 
 HRESULT Texture::Load(std::string fileName)
 {
-	CoInitialize(nullptr);
+
 
 	wchar_t wtext[FILENAME_MAX];
 	size_t ret;
@@ -30,7 +30,7 @@ HRESULT Texture::Load(std::string fileName)
 	pFactory->CreateFormatConverter(&pFormatConverter);
 	pFormatConverter->Initialize(pFrame, GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, NULL, 1.0f, WICBitmapPaletteTypeMedianCut);
 
-	CoUninitialize();
+
 
 
 	pFormatConverter->GetSize(&imgWidth_, &imgHeight_);
@@ -70,6 +70,11 @@ HRESULT Texture::Load(std::string fileName)
 	Direct3D::pDevice->CreateShaderResourceView(pTexture, &srv, &pSRV_);
 	pTexture->Release();
     return S_OK;
+}
+
+HRESULT Texture::LoadCube(std::string fileName)
+{
+	return S_OK;
 }
 
 void Texture::Release()

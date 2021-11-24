@@ -32,6 +32,8 @@ namespace Direct3D
 //初期化
 void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 {
+	CoInitialize(nullptr);
+
 	screenWidth = winW;
 	screenHeight = winH;
 
@@ -148,7 +150,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	InitShader3D();
 	InitShaderTest();
 	InitShaderWater();
-	InitShaderEnv();
+	InitShaderToon();
 }
 
 //シェーダー準備(2D)
@@ -295,13 +297,13 @@ void Direct3D::InitShaderWater()
 
 }
 
-void Direct3D::InitShaderEnv()
+void Direct3D::InitShaderToon()
 {
 	// 頂点シェーダの作成（コンパイル）
 	ID3DBlob* pCompileVS = nullptr;
-	D3DCompileFromFile(L"EnvShader.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	D3DCompileFromFile(L"ToonShader.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
 	assert(pCompileVS != nullptr);
-	pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &shaderBundle[SHADER_ENVMAP].pVertexShader);
+	pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &shaderBundle[SHADER_TOON].pVertexShader);
 
 	//頂点インプットレイアウト
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -309,7 +311,7 @@ void Direct3D::InitShaderEnv()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 1,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 2,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
-	pDevice->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &shaderBundle[SHADER_ENVMAP].pVertexLayout);
+	pDevice->CreateInputLayout(layout, 3, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &shaderBundle[SHADER_TOON].pVertexLayout);
 
 
 
@@ -317,8 +319,8 @@ void Direct3D::InitShaderEnv()
 
 	// ピクセルシェーダの作成（コンパイル）
 	ID3DBlob* pCompilePS = nullptr;
-	D3DCompileFromFile(L"EnvShader.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
-	pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &shaderBundle[SHADER_ENVMAP].pPixelShader);
+	D3DCompileFromFile(L"ToonShader.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &shaderBundle[SHADER_TOON].pPixelShader);
 	pCompilePS->Release();
 
 	//ラスタライザ作成
@@ -326,7 +328,7 @@ void Direct3D::InitShaderEnv()
 	rdc.CullMode = D3D11_CULL_BACK;
 	rdc.FillMode = D3D11_FILL_SOLID;
 	rdc.FrontCounterClockwise = FALSE;
-	pDevice->CreateRasterizerState(&rdc, &shaderBundle[SHADER_ENVMAP].pRasterizerState);
+	pDevice->CreateRasterizerState(&rdc, &shaderBundle[SHADER_TOON].pRasterizerState);
 
 }
 
@@ -364,6 +366,8 @@ void Direct3D::Release()
 		shaderBundle[i].pPixelShader->Release();
 		shaderBundle[i].pVertexShader->Release();
 	}
+
+	CoUninitialize();
 
 	pBlendState->Release();
 	pRenderTargetView->Release();
