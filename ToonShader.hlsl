@@ -74,9 +74,9 @@ float4 PS(VS_OUT inData) : SV_Target
 
 float4 VS_Outline(float4 pos : POSITION,  float4 normal : NORMAL) : SV_POSITION
 {
-	pos.x += normal.x * 0.4;
-	pos.y += normal.y * 0.4;
-	pos.z += normal.z * 0.4;
+	pos.x += normal.x * 0.1;
+	pos.y += normal.y * 0.1;
+	pos.z += normal.z * 0.1;
 
 	return mul(pos, matWVP);
 }

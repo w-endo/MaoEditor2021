@@ -362,6 +362,15 @@ void Fbx::Draw(Transform& transform)
 
 		Direct3D::pContext->DrawIndexed(polygonCount_ * 3, 0, 0);
 	}
+
+	if (shaderType_ == SHADER_OUTLINE)
+	{
+		shaderType_ = SHADER_TOON;
+		Draw(transform);
+		shaderType_ = SHADER_OUTLINE;
+	}
+
+
 }
 
 void Fbx::Release()
