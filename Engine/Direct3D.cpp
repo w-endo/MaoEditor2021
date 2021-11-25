@@ -155,6 +155,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	InitShaderTest();
 	InitShaderWater();
 	InitShaderToon();
+	InitShaderOutline();
 
 	pToonTexture = new Texture;
 	pToonTexture->Load("Assets\\Toon.png");
@@ -336,6 +337,40 @@ void Direct3D::InitShaderToon()
 	rdc.FillMode = D3D11_FILL_SOLID;
 	rdc.FrontCounterClockwise = FALSE;
 	pDevice->CreateRasterizerState(&rdc, &shaderBundle[SHADER_TOON].pRasterizerState);
+
+}
+
+void Direct3D::InitShaderOutline()
+{
+	// 頂点シェーダの作成（コンパイル）
+	ID3DBlob* pCompileVS = nullptr;
+	D3DCompileFromFile(L"ToonShader.hlsl", nullptr, nullptr, "VS_Outline", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	assert(pCompileVS != nullptr);
+	pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &shaderBundle[SHADER_OUTLINE].pVertexShader);
+
+	//頂点インプットレイアウト
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
+		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(XMVECTOR) * 2,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	pDevice->CreateInputLayout(layout, 2, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &shaderBundle[SHADER_OUTLINE].pVertexLayout);
+
+
+
+	pCompileVS->Release();
+
+	// ピクセルシェーダの作成（コンパイル）
+	ID3DBlob* pCompilePS = nullptr;
+	D3DCompileFromFile(L"ToonShader.hlsl", nullptr, nullptr, "PS_Outline", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &shaderBundle[SHADER_OUTLINE].pPixelShader);
+	pCompilePS->Release();
+
+	//ラスタライザ作成
+	D3D11_RASTERIZER_DESC rdc = {};
+	rdc.CullMode = D3D11_CULL_BACK;
+	rdc.FillMode = D3D11_FILL_SOLID;
+	rdc.FrontCounterClockwise = FALSE;
+	pDevice->CreateRasterizerState(&rdc, &shaderBundle[SHADER_OUTLINE].pRasterizerState);
 
 }
 

@@ -69,3 +69,19 @@ float4 PS(VS_OUT inData) : SV_Target
 	return diffuse + specular + ambient;
 
 }
+
+
+
+float4 VS_Outline(float4 pos : POSITION,  float4 normal : NORMAL) : SV_POSITION
+{
+	pos.x += normal.x * 0.4;
+	pos.y += normal.y * 0.4;
+	pos.z += normal.z * 0.4;
+
+	return mul(pos, matWVP);
+}
+
+float4 PS_Outline(float4 pos : SV_POSITION) : SV_Target
+{
+	return float4(0, 0, 0, 1);
+}

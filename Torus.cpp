@@ -17,12 +17,10 @@ Torus::~Torus()
 void Torus::Initialize()
 {
     //モデルデータのロード
-    hModel_ = Model::Load("Assets\\Ball.fbx", SHADER_TOON);
+    hModel_ = Model::Load("Assets\\torus.fbx", SHADER_OUTLINE);
     assert(hModel_ >= 0);
 
-    transform_.scale_.x = 2.0f;
-    transform_.scale_.y = 2.0f;
-    transform_.scale_.z = 2.0f;
+
 }
 
 //更新
