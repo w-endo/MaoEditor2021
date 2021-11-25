@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d11.h>
 #include <assert.h>
+#include "Texture.h"
 #define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
 
 //リンカ
@@ -16,6 +17,7 @@ namespace Direct3D
 	extern ID3D11DeviceContext* pContext;				//デバイスコンテキスト
 	extern int screenWidth;
 	extern int screenHeight;
+	extern Texture* pToonTexture;
 
 
 	//初期化

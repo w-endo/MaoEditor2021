@@ -347,6 +347,13 @@ void Fbx::Draw(Transform& transform)
 			Direct3D::pContext->PSSetShaderResources(1, 1, &pSRV);
 		}
 
+		//トゥーンテクスチャ
+		if (shaderType_ == SHADER_TOON)
+		{
+			ID3D11ShaderResourceView* pSRV = Direct3D::pToonTexture->GetSRV();
+			Direct3D::pContext->PSSetShaderResources(1, 1, &pSRV);
+		}
+
 
 
 

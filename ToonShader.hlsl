@@ -1,4 +1,5 @@
 Texture2D		g_texture : register(t0);	//テクスチャー
+Texture2D		g_toonTexture : register(t1);	//テクスチャー
 SamplerState	g_sampler : register(s0);	//サンプラー
 
 cbuffer gloabal
@@ -43,20 +44,9 @@ float4 PS(VS_OUT inData) : SV_Target
 
 	float4 normal = normalize(inData.normal);
 
-	float4 diffuse = saturate(dot(normal, light));
-/*	if (diffuse.r < 0.3)
-	{
-		diffuse = 0.3;
-	}
-	else if (diffuse.r < 0.5)
-	{
-		diffuse = 0.8;
-	}
-	else
-	{
-		diffuse = 1;
-	}
-*/
+	float2 uv = float2(saturate(dot(normal, light)), 0);
+	float4 diffuse = g_toonTexture.Sample(g_sampler, uv);
+
 
 	float4 ambient;
 

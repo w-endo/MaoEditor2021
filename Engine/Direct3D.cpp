@@ -17,6 +17,7 @@ namespace Direct3D
 
 	int screenWidth;
 	int screenHeight;
+	Texture* pToonTexture;
 
 	struct SHADER_BUNDLE
 	{
@@ -33,6 +34,9 @@ namespace Direct3D
 void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 {
 	CoInitialize(nullptr);
+
+
+
 
 	screenWidth = winW;
 	screenHeight = winH;
@@ -151,6 +155,9 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	InitShaderTest();
 	InitShaderWater();
 	InitShaderToon();
+
+	pToonTexture = new Texture;
+	pToonTexture->Load("Assets\\Toon.png");
 }
 
 //シェーダー準備(2D)
