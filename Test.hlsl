@@ -9,7 +9,7 @@ cbuffer gloabal
 	float4	 speculer;
 	float4	 camPos;
 	float	 shininess;
-	bool		isTexture;
+	bool	isTexture;
 };
 
 struct VS_OUT

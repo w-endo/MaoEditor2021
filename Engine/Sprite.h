@@ -40,6 +40,7 @@ public:
 	Sprite();
 	~Sprite();
 	virtual HRESULT Initialize(std::string fileName);
+	virtual HRESULT Initialize(ID3D11Texture2D* pTexture);
 	virtual void Draw(Transform transform);
 	virtual void Release();
 };

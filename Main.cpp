@@ -137,11 +137,20 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			pRootJob->UpdateSub();
 
 			Direct3D::BeginDraw();
-
+			Camera::SetPosition(XMFLOAT3(0, 10, -1));
+			Camera::Update();
 			pRootJob->DrawSub();
 
-			//•`‰æˆ—
 			Direct3D::EndDraw();
+
+
+
+			Direct3D::BeginDraw2();
+			Camera::SetPosition(XMFLOAT3(0, 2, -10));
+			Camera::Update();
+			pRootJob->DrawSub();
+			Direct3D::EndDraw();
+
 		}
 	}
 

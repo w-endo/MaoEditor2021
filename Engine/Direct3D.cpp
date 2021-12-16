@@ -1,6 +1,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include "Direct3D.h"
+#include "Sprite.h"
 
 using namespace DirectX;
 
@@ -18,6 +19,13 @@ namespace Direct3D
 	int screenWidth;
 	int screenHeight;
 	Texture* pToonTexture;
+	Sprite* pScreen;
+
+	ID3D11Texture2D * pRenderTexture;
+	ID3D11RenderTargetView * pRenderTargetView2 = nullptr;//レンダーターゲットビュー
+
+
+
 
 	struct SHADER_BUNDLE
 	{
@@ -159,6 +167,32 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 	pToonTexture = new Texture;
 	pToonTexture->Load("Assets\\Toon.png");
+
+
+	D3D11_TEXTURE2D_DESC texdec;
+	texdec.Width = winW;
+	texdec.Height = winH;
+	texdec.MipLevels = 1;
+	texdec.ArraySize = 1;
+	texdec.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texdec.SampleDesc.Count = 1;
+	texdec.SampleDesc.Quality = 0;
+	texdec.Usage = D3D11_USAGE_DEFAULT;
+	texdec.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	texdec.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	texdec.MiscFlags = 0;
+	Direct3D::pDevice->CreateTexture2D(&texdec, nullptr, &pRenderTexture);
+
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+	Direct3D::pDevice->CreateRenderTargetView(pRenderTexture,
+		&renderTargetViewDesc, &pRenderTargetView2);
+
+	pScreen = new Sprite;
+	pScreen->Initialize(pRenderTexture);
 }
 
 //シェーダー準備(2D)
@@ -378,8 +412,26 @@ void Direct3D::InitShaderOutline()
 //描画開始
 void Direct3D::BeginDraw()
 {
+	pContext->OMSetRenderTargets(1, &pRenderTargetView2, pDepthStencilView);
+
 	//背景の色
 	float clearColor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };//R,G,B,A
+
+	//画面をクリア
+	pContext->ClearRenderTargetView(pRenderTargetView2, clearColor);
+
+
+	//深度バッファクリア
+	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+}
+
+void Direct3D::BeginDraw2()
+{
+	pContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
+
+	//背景の色
+	float clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };//R,G,B,A
 
 	//画面をクリア
 	pContext->ClearRenderTargetView(pRenderTargetView, clearColor);
@@ -388,6 +440,11 @@ void Direct3D::BeginDraw()
 	//深度バッファクリア
 	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+	Transform transform;
+	transform.position_.x = 0.5;
+	transform.position_.y = 0.5;
+	transform.Calclation();
+	pScreen->Draw(transform);
 }
 
 //描画終了

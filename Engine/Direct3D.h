@@ -34,6 +34,8 @@ namespace Direct3D
 	//•`‰æŠJn
 	void BeginDraw();
 
+	void BeginDraw2();
+
 	//•`‰æI—¹
 	void EndDraw();
 

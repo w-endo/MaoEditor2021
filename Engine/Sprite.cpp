@@ -43,6 +43,32 @@ HRESULT Sprite::Initialize(std::string fileName)
 	return S_OK;
 }
 
+HRESULT Sprite::Initialize(ID3D11Texture2D* pTexture)
+{
+	// 頂点情報
+	if (FAILED(CreateVertex()))
+	{
+		return E_FAIL;
+	}
+
+	//インデックス情報
+	if (FAILED(CreateIndex()))
+	{
+		return E_FAIL;
+	}
+
+	//コンスタントバッファ作成
+	if (FAILED(CreateConstant()))
+	{
+		return E_FAIL;
+	}
+
+	pTexture_ = new Texture;
+	pTexture_->Load(pTexture);
+
+	return S_OK;
+}
+
 HRESULT Sprite::CreateTexture(std::string fileName)
 {
 	pTexture_ = new Texture;

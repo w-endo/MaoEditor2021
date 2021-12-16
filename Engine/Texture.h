@@ -12,6 +12,7 @@ public:
 	Texture();
 	~Texture();
 	HRESULT Load(std::string fileName);
+	HRESULT Load(ID3D11Texture2D* pTexture);
 	HRESULT LoadCube(std::string fileName);
 	void Release();
 
