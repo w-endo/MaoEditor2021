@@ -16,16 +16,19 @@ namespace Direct3D
 	ID3D11DepthStencilView* pDepthStencilView;	//深度ステンシルビュー
 	ID3D11BlendState* pBlendState;
 
+	D3D11_VIEWPORT vp;
+	D3D11_VIEWPORT vp2;
+
+	Sprite* pScreen;
+
+
+
+	ID3D11Texture2D* pRenderTexture;
+	ID3D11RenderTargetView* pRenderTargetView2;
+
 	int screenWidth;
 	int screenHeight;
 	Texture* pToonTexture;
-	Sprite* pScreen;
-
-	ID3D11Texture2D * pRenderTexture;
-	ID3D11RenderTargetView * pRenderTargetView2 = nullptr;//レンダーターゲットビュー
-
-
-
 
 	struct SHADER_BUNDLE
 	{
@@ -103,13 +106,20 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 	///////////////////////////ビューポート（描画範囲）設定///////////////////////////////
 	//レンダリング結果を表示する範囲
-	D3D11_VIEWPORT vp;
+
 	vp.Width = (float)winW;	//幅
 	vp.Height = (float)winH;//高さ
 	vp.MinDepth = 0.0f;	//手前
 	vp.MaxDepth = 1.0f;	//奥
 	vp.TopLeftX = 0;	//左
 	vp.TopLeftY = 0;	//上
+
+	vp2.Width = 200.0f;	//幅
+	vp2.Height = 150.0f;//高さ
+	vp2.MinDepth = 0.0f;	//手前
+	vp2.MaxDepth = 1.0f;	//奥
+	vp2.TopLeftX = 0;	//左
+	vp2.TopLeftY = 0;	//上
 
 
 	//深度ステンシルビューの作成
@@ -154,8 +164,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 	//データを画面に描画するための一通りの設定（パイプライン）
 	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // データの入力種類を指定
-	pContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);            // 描画先を設定
-	pContext->RSSetViewports(1, &vp);
+
 
 	//シェーダー準備
 	InitShader2D();
@@ -169,9 +178,10 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	pToonTexture->Load("Assets\\Toon.png");
 
 
+	//新しいレンダーターゲット作成
 	D3D11_TEXTURE2D_DESC texdec;
-	texdec.Width = winW;
-	texdec.Height = winH;
+	texdec.Width = 200;
+	texdec.Height = 150;
 	texdec.MipLevels = 1;
 	texdec.ArraySize = 1;
 	texdec.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -183,6 +193,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	texdec.MiscFlags = 0;
 	Direct3D::pDevice->CreateTexture2D(&texdec, nullptr, &pRenderTexture);
 
+	//新しいレンダーターゲットビュー作成
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 	renderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -193,6 +204,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 	pScreen = new Sprite;
 	pScreen->Initialize(pRenderTexture);
+
 }
 
 //シェーダー準備(2D)
@@ -412,7 +424,9 @@ void Direct3D::InitShaderOutline()
 //描画開始
 void Direct3D::BeginDraw()
 {
-	pContext->OMSetRenderTargets(1, &pRenderTargetView2, pDepthStencilView);
+	pContext->OMSetRenderTargets(1, &pRenderTargetView2, pDepthStencilView);            // 描画先を設定
+
+	pContext->RSSetViewports(1, &vp2);
 
 	//背景の色
 	float clearColor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };//R,G,B,A
@@ -428,10 +442,12 @@ void Direct3D::BeginDraw()
 
 void Direct3D::BeginDraw2()
 {
-	pContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
+	pContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);            // 描画先を設定
+
+	pContext->RSSetViewports(1, &vp);
 
 	//背景の色
-	float clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };//R,G,B,A
+	float clearColor[4] = { 0.5f, 0.5f, 0.0f, 1.0f };//R,G,B,A
 
 	//画面をクリア
 	pContext->ClearRenderTargetView(pRenderTargetView, clearColor);
@@ -440,12 +456,20 @@ void Direct3D::BeginDraw2()
 	//深度バッファクリア
 	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+
+
+
+}
+
+void Direct3D::ScreenDraw()
+{
 	Transform transform;
-	transform.position_.x = 0.5;
-	transform.position_.y = 0.5;
+	//transform.position_.x = 0.7f;
+	//transform.position_.y = 0.7f;
 	transform.Calclation();
 	pScreen->Draw(transform);
 }
+
 
 //描画終了
 void Direct3D::EndDraw()

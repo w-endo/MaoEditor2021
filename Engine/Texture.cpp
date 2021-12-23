@@ -87,9 +87,9 @@ HRESULT Texture::Load(ID3D11Texture2D* pTexture)
 	srv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srv.Texture2D.MipLevels = 1;
 	Direct3D::pDevice->CreateShaderResourceView(pTexture, &srv, &pSRV_);
-	
-	imgWidth_ = 320;
-	imgHeight_ = 240;
+
+	imgWidth_ = 800;
+	imgHeight_ = 600;
 
 
 	return S_OK;

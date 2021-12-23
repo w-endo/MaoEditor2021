@@ -47,7 +47,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 	//ウィンドウサイズの計算
 	RECT winRect = { 0, 0, CLIENT_WIDTH, CLIENT_HEIGHT };
-	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, TRUE);
+	AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, FALSE);
 	int winW = winRect.right - winRect.left;     //ウィンドウ幅
 	int winH = winRect.bottom - winRect.top;     //ウィンドウ高さ
 
@@ -74,7 +74,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 
 	//Direct3D初期化
-	Direct3D::Initialize(winW, winH, hWnd);
+	Direct3D::Initialize(CLIENT_WIDTH, CLIENT_HEIGHT, hWnd);
 
 	Input::Initialize(hWnd);
 
@@ -136,19 +136,22 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 			Camera::Update();
 			pRootJob->UpdateSub();
 
-			Direct3D::BeginDraw();
-			Camera::SetPosition(XMFLOAT3(0, 10, -1));
-			Camera::Update();
-			pRootJob->DrawSub();
 
+			//１回目
+			//Camera::SetPosition(XMFLOAT3(0, 10, -1));
+			//Camera::Update();
+			Direct3D::BeginDraw();
+			pRootJob->DrawSub();
 			Direct3D::EndDraw();
 
 
 
+			//２回目
+			//Camera::SetPosition(XMFLOAT3(0, 2, -10));
+			//Camera::Update();
 			Direct3D::BeginDraw2();
-			Camera::SetPosition(XMFLOAT3(0, 2, -10));
-			Camera::Update();
 			pRootJob->DrawSub();
+			Direct3D::ScreenDraw();
 			Direct3D::EndDraw();
 
 		}
