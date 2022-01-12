@@ -138,8 +138,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 
 			//‚P‰ñ–Ú
-			//Camera::SetPosition(XMFLOAT3(0, 10, -1));
-			//Camera::Update();
+			Camera::SetPosition(XMFLOAT3(15, 3, -5));
+			Camera::Update();
 			Direct3D::BeginDraw();
 			pRootJob->DrawSub();
 			Direct3D::EndDraw();
@@ -147,8 +147,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
 
 			//‚Q‰ñ–Ú
-			//Camera::SetPosition(XMFLOAT3(0, 2, -10));
-			//Camera::Update();
+			Camera::SetPosition(XMFLOAT3(0, 4, -10));
+			Camera::Update();
 			Direct3D::BeginDraw2();
 			pRootJob->DrawSub();
 			Direct3D::ScreenDraw();

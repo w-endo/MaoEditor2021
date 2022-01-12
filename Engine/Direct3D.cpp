@@ -2,6 +2,8 @@
 #include <DirectXMath.h>
 #include "Direct3D.h"
 #include "Sprite.h"
+#include "Camera.h"
+
 
 using namespace DirectX;
 
@@ -21,8 +23,11 @@ namespace Direct3D
 
 	Sprite* pScreen;
 
+	XMMATRIX lightViewMatrix;
+	XMMATRIX clipToUVMatrix;
 
 
+	ID3D11ShaderResourceView* pRenderTargetSRV;
 	ID3D11Texture2D* pRenderTexture;
 	ID3D11RenderTargetView* pRenderTargetView2;
 
@@ -114,8 +119,8 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	vp.TopLeftX = 0;	//左
 	vp.TopLeftY = 0;	//上
 
-	vp2.Width = 200.0f;	//幅
-	vp2.Height = 150.0f;//高さ
+	vp2.Width = 800.0f;	//幅
+	vp2.Height = 600.0f;//高さ
 	vp2.MinDepth = 0.0f;	//手前
 	vp2.MaxDepth = 1.0f;	//奥
 	vp2.TopLeftX = 0;	//左
@@ -173,6 +178,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	InitShaderWater();
 	InitShaderToon();
 	InitShaderOutline();
+	InitShaderShadowMap();
 
 	pToonTexture = new Texture;
 	pToonTexture->Load("Assets\\Toon.png");
@@ -180,8 +186,8 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
 	//新しいレンダーターゲット作成
 	D3D11_TEXTURE2D_DESC texdec;
-	texdec.Width = 200;
-	texdec.Height = 150;
+	texdec.Width = 800;
+	texdec.Height = 600;
 	texdec.MipLevels = 1;
 	texdec.ArraySize = 1;
 	texdec.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -202,8 +208,29 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
 	Direct3D::pDevice->CreateRenderTargetView(pRenderTexture,
 		&renderTargetViewDesc, &pRenderTargetView2);
 
+	//シェーダーリソースビュー
+	D3D11_SHADER_RESOURCE_VIEW_DESC srv = {};
+	srv.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srv.Texture2D.MipLevels = 1;
+	Direct3D::pDevice->CreateShaderResourceView(pRenderTexture, &srv, &pRenderTargetSRV);
+
 	pScreen = new Sprite;
 	pScreen->Initialize(pRenderTexture);
+
+
+
+
+	XMFLOAT4X4 clipToUV;
+	ZeroMemory(&clipToUV, sizeof(XMFLOAT4X4));
+	clipToUV._11 = 0.5;
+	clipToUV._22 = -0.5;
+	clipToUV._33 = 1;
+	clipToUV._41 = 0.5;
+	clipToUV._42 = 0.5;
+	clipToUV._44 = 1;
+	clipToUVMatrix = XMLoadFloat4x4(&clipToUV);
+
 
 }
 
@@ -420,16 +447,51 @@ void Direct3D::InitShaderOutline()
 
 }
 
+void Direct3D::InitShaderShadowMap()
+{
+	// 頂点シェーダの作成（コンパイル）
+	ID3DBlob* pCompileVS = nullptr;
+	D3DCompileFromFile(L"ShadowMap.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+	assert(pCompileVS != nullptr);
+	pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &shaderBundle[SHADER_SHADOWMAP].pVertexShader);
+
+	//頂点インプットレイアウト
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
+	};
+	pDevice->CreateInputLayout(layout, 1, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &shaderBundle[SHADER_SHADOWMAP].pVertexLayout);
+
+
+
+	pCompileVS->Release();
+
+	// ピクセルシェーダの作成（コンパイル）
+	ID3DBlob* pCompilePS = nullptr;
+	D3DCompileFromFile(L"ShadowMap.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+	pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &shaderBundle[SHADER_SHADOWMAP].pPixelShader);
+	pCompilePS->Release();
+
+	//ラスタライザ作成
+	D3D11_RASTERIZER_DESC rdc = {};
+	rdc.CullMode = D3D11_CULL_BACK;
+	rdc.FillMode = D3D11_FILL_SOLID;
+	rdc.FrontCounterClockwise = FALSE;
+	pDevice->CreateRasterizerState(&rdc, &shaderBundle[SHADER_SHADOWMAP].pRasterizerState);
+}
+
 
 //描画開始
 void Direct3D::BeginDraw()
 {
+	lightViewMatrix = Camera::GetViewMatrix();
+
+
 	pContext->OMSetRenderTargets(1, &pRenderTargetView2, pDepthStencilView);            // 描画先を設定
 
 	pContext->RSSetViewports(1, &vp2);
 
 	//背景の色
-	float clearColor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };//R,G,B,A
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };//R,G,B,A
 
 	//画面をクリア
 	pContext->ClearRenderTargetView(pRenderTargetView2, clearColor);
@@ -437,6 +499,8 @@ void Direct3D::BeginDraw()
 
 	//深度バッファクリア
 	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	SetShader(SHADER_SHADOWMAP);
 
 }
 
@@ -456,7 +520,7 @@ void Direct3D::BeginDraw2()
 	//深度バッファクリア
 	pContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-
+	SetShader(SHADER_3D);
 
 
 }

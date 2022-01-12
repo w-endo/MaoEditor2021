@@ -17,7 +17,7 @@ Water::~Water()
 void Water::Initialize()
 {
     //モデルデータのロード
-    hModel_ = Model::Load("Assets\\Water.fbx", SHADER_WATER);
+    hModel_ = Model::Load("Assets\\Water.fbx", SHADER_3D);
     assert(hModel_ >= 0);
 
     transform_.scale_.x = 10.0f;

@@ -1,8 +1,6 @@
-//───────────────────────────────────────
- // テクスチャ＆サンプラーデータのグローバル変数定義
-//───────────────────────────────────────
-Texture2D		g_texture : register(t0);	//テクスチャー
-SamplerState	g_sampler : register(s0);	//サンプラー
+Texture2D		g_texture : register(t0);		//テクスチャー
+Texture2D		g_textureNormal : register(t1);	//テクスチャー
+SamplerState	g_sampler : register(s0);		//サンプラー
 
 //───────────────────────────────────────
 // コンスタントバッファ
@@ -10,7 +8,18 @@ SamplerState	g_sampler : register(s0);	//サンプラー
 //───────────────────────────────────────
 cbuffer global
 {
-	float4x4	matW;			//ワールド行列
+	float4x4 matWVP;
+	float4x4 matNormal;
+	float4x4 matWorld;
+	float4x4	g_mWLP;   //ワールド・”ライトビュー”・プロジェクションの合成 
+	float4x4	g_mWLPT;   //ワールド・”ライトビュー”・プロジェクション・UV 行列の合成
+	float4	 diffuseColor;
+	float4	 speculer;
+	float4	 camPos;
+	float	 shininess;
+	bool		isTexture;
+	float	scroll;
+
 };
 
 //───────────────────────────────────────
@@ -19,21 +28,20 @@ cbuffer global
 struct VS_OUT
 {
 	float4 pos  : SV_POSITION;	//位置
-	float2 uv	: TEXCOORD;		//UV座標
+	float z		: TEXCOORD1;
 };
 
 //───────────────────────────────────────
 // 頂点シェーダ
 //───────────────────────────────────────
-VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
+VS_OUT VS(float4 pos : POSITION)
 {
 	//ピクセルシェーダーへ渡す情報
 	VS_OUT outData;
+	outData.pos = mul(pos, matWVP);
 
-	//ローカル座標に、ワールド行列をかけて
-	//スクリーン座標に変換し、ピクセルシェーダーへ
-	outData.pos = mul(pos, matW);
-	outData.uv = uv;
+	outData.z = length(camPos - mul(pos, matWorld)) / 30.0;
+
 
 	//まとめて出力
 	return outData;
@@ -44,10 +52,6 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 //───────────────────────────────────────
 float4 PS(VS_OUT inData) : SV_Target
 {
-	float4 color;
-	color = g_texture.Sample(g_sampler, inData.uv);
+	return float4(inData.z, inData.z, inData.z, 1);
 
-
-
-	return color;
 }

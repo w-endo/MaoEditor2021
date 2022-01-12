@@ -36,9 +36,13 @@ class Fbx
 	{
 		XMMATRIX	matWVP;
 		XMMATRIX	matNormal;
+		XMMATRIX	matWorld;
+		XMMATRIX	matWLP;
+		XMMATRIX	matWLPT;
 		XMFLOAT4	diffuseColor;
 		XMFLOAT4	specular;
 		XMFLOAT4	camPos;
+		XMFLOAT4	lightPos;
 		float		shininess;
 		int			isTexture;
 		float		scroll;

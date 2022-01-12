@@ -4,11 +4,16 @@
 #include "Texture.h"
 #define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
 
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
+
 //ÉäÉìÉJ
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-enum SHADER_TYPE { SHADER_3D, SHADER_2D, SHADER_TEST, SHADER_WATER, SHADER_TOON, SHADER_OUTLINE, SHADER_MAX };
+enum SHADER_TYPE { SHADER_3D, SHADER_2D, SHADER_TEST, SHADER_WATER, SHADER_TOON, SHADER_OUTLINE, SHADER_SHADOWMAP, SHADER_MAX };
 
 
 namespace Direct3D
@@ -18,6 +23,9 @@ namespace Direct3D
 	extern int screenWidth;
 	extern int screenHeight;
 	extern Texture* pToonTexture;
+	extern XMMATRIX lightViewMatrix;
+	extern XMMATRIX clipToUVMatrix;
+	extern ID3D11ShaderResourceView* pRenderTargetSRV;
 
 
 	//èâä˙âª
@@ -30,6 +38,7 @@ namespace Direct3D
 	void InitShaderWater();
 	void InitShaderToon();
 	void InitShaderOutline();
+	void InitShaderShadowMap();
 
 	//ï`âÊäJén
 	void BeginDraw();

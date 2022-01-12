@@ -17,7 +17,7 @@ Torus::~Torus()
 void Torus::Initialize()
 {
     //モデルデータのロード
-    hModel_ = Model::Load("Assets\\torus.fbx", SHADER_OUTLINE);
+    hModel_ = Model::Load("Assets\\torus.fbx", SHADER_3D);
     assert(hModel_ >= 0);
 
 
@@ -26,7 +26,7 @@ void Torus::Initialize()
 //更新
 void Torus::Update()
 {
-    transform_.rotate_.y += 1;
+   transform_.rotate_.y += 1;
 }
 
 //描画

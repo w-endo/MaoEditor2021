@@ -285,7 +285,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
-	Direct3D::SetShader(shaderType_);
+	//Direct3D::SetShader(shaderType_);
 
 
 
@@ -312,16 +312,20 @@ void Fbx::Draw(Transform& transform)
 		CONSTANT_BUFFER cb;
 		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 		cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
+		cb.matWorld = XMMatrixTranspose(transform.GetWorldMatrix());
 		cb.isTexture = pMaterialList_[i].pTexture != nullptr;
 		cb.diffuseColor = pMaterialList_[i].diffuse;
 		cb.specular = pMaterialList_[i].specular;
 		cb.shininess = pMaterialList_[i].shininess;
 		cb.camPos = XMFLOAT4(Camera::GetPosition().x, Camera::GetPosition().y, Camera::GetPosition().z, 0);
+		cb.lightPos = XMFLOAT4(15.0f, 3.0f, -5.0f, 0.0);
+		cb.matWLP = XMMatrixTranspose(transform.GetWorldMatrix() * Direct3D::lightViewMatrix * Camera::GetProjectionMatrix());
+		cb.matWLPT = XMMatrixTranspose(transform.GetWorldMatrix() * Direct3D::lightViewMatrix * Camera::GetProjectionMatrix() * Direct3D::clipToUVMatrix);
 
 		if (shaderType_ == SHADER_WATER)
 		{
 			static float scroll = 0.0f;
-			scroll += 0.001f;
+			//scroll += 0.001f;
 			cb.scroll = scroll;
 		}
 
@@ -340,19 +344,23 @@ void Fbx::Draw(Transform& transform)
 			Direct3D::pContext->PSSetShaderResources(0, 1, &pSRV);
 		}
 
-		//ノーマルテクスチャ
-		if (pMaterialList_[i].pTextureNormal != nullptr)
-		{
-			ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTextureNormal->GetSRV();
-			Direct3D::pContext->PSSetShaderResources(1, 1, &pSRV);
-		}
+		Direct3D::pContext->PSSetShaderResources(1, 1, &Direct3D::pRenderTargetSRV);
 
-		//トゥーンテクスチャ
-		if (shaderType_ == SHADER_TOON)
-		{
-			ID3D11ShaderResourceView* pSRV = Direct3D::pToonTexture->GetSRV();
-			Direct3D::pContext->PSSetShaderResources(1, 1, &pSRV);
-		}
+
+
+		////ノーマルテクスチャ
+		//if (pMaterialList_[i].pTextureNormal != nullptr)
+		//{
+		//	ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTextureNormal->GetSRV();
+		//	Direct3D::pContext->PSSetShaderResources(1, 1, &pSRV);
+		//}
+
+		////トゥーンテクスチャ
+		//if (shaderType_ == SHADER_TOON)
+		//{
+		//	ID3D11ShaderResourceView* pSRV = Direct3D::pToonTexture->GetSRV();
+		//	Direct3D::pContext->PSSetShaderResources(1, 1, &pSRV);
+		//}
 
 
 
